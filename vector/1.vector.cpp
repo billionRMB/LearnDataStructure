@@ -28,11 +28,34 @@ void clear(Vector *v){
     return ;
 }
 
-// 先判断
+// calloc 申请并赋值为０
+// malloc 仅申请
+// realloc 重新分配
+// 字节大小
+int expand(Vector *v){
+    // 注意内存泄露
+    int extra_size = v->size;
+    int*p;
+    // 申请内存多次逐步减少
+    while(extra_size){
+        p = (int* )realloc(v->data,sizeof(int) * (v->size + extra_size));
+        if(p)break;
+        extra_size /= 2;
+    }
+    if(extra_size == 0)return 0;
+    v->data = p;
+    v->size *= 2;
+    return 1;
+}
+
+// 先判断错误
 int insert(Vector *v, int ind,int val){
-    if(v == NULL)return 0;
-    if(v->length == v->size)return 0; 
     if(ind < 0 || ind > v->length)return 0;
+    if(v->length == v->size){
+        if(!expand(v)){
+            return 0;
+        }
+    }
     for(int i = v->length - 1;i >= ind;i--){
        v->data[i+1] = v->data[i]; 
     }
