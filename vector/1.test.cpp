@@ -1,91 +1,78 @@
 /*************************************************************************
-	> File Name: 1.vector.cpp
+	> File Name: 1.test.cpp
 	> Author:Gin.TaMa 
 	> Mail:1137554811@qq.com 
-	> Created Time: 2019年04月09日 星期二 19时03分27秒
+	> Created Time: 2019年04月10日 星期三 14时55分12秒
  ************************************************************************/
 #include<stdio.h>
-#include<time.h>
 #include<stdlib.h>
-
-typedef struct Vector{
-    int *data;// void* 来代表任意类型
+typedef struct vector{
+    int* data;
     int size,length;
-}Vector;
+}vector;
 
-Vector *init(int n){
-    Vector *p = (Vector*) malloc(sizeof(Vector));
-    p -> data = (int *)malloc(sizeof(int)*n);
-    p -> size = n;
-    p -> length = 0;
+vector* init(int n){
+    vector * p = (vector*)malloc(sizeof(vector)); 
+    p->data = (int*)malloc(sizeof(int)*n);
+    p->length = 0;
+    p->size = n;
     return p;
 }
 
-void clear(Vector *v){
-    if(v == NULL)return;
-    free(v -> data);
+void clear(vector * v){
+    free(v->data);
     free(v);
     return ;
 }
 
-// calloc 申请并赋值为０
-// malloc 仅申请
-// realloc 重新分配
-// 字节大小
-int expand(Vector *v){
-    // 注意内存泄露
-    int extra_size = v->size;
-    int*p;
-    // 申请内存多次逐步减少
-    while(extra_size){
-        p = (int* )realloc(v->data,sizeof(int) * (v->size + extra_size));
+int expand(vector *v){
+    int size_malloc = v->size;
+    int *p;
+    while(size_malloc){
+        p = (int*)realloc(v->data,sizeof(int)*(v->size + size_malloc));
         if(p)break;
-        extra_size /= 2;
+        size_malloc /= 2;
     }
-    if(extra_size == 0)return 0;
-    v->data = p;
-    v->size += extra_size;
+    if(size_malloc == 0)return 0;
+    v -> data = p;
+    v -> size += size_malloc;
     return 1;
 }
 
-// 先判断错误
-int insert(Vector *v, int ind,int val){
-    if(ind < 0 || ind > v->length)return 0;
+int insert(vector *v,int ind,int val){
     if(v->length == v->size){
-        if(!expand(v)){
-            return 0;
-        }
+        if(!expand(v))return 0;
     }
-    for(int i = v->length - 1;i >= ind;i--){
-       v->data[i+1] = v->data[i]; 
+    if(ind < 0 || ind > v->length) return 0;
+    for(int i = v->length;i > ind;i --){
+        v->data[i] = v->data[i - 1];
     }
     v->data[ind] = val;
-    v->length += 1;
+    v->length ++;
     return 1;
 }
 
-int erase(Vector *v,int ind){
+int erase(vector *v,int ind){
     if(ind < 0 || ind >= v->length)return 0;
-    for(int i = ind+1;i < v->length;i ++){
-        v->data[i - 1] = v->data[i];
+    for(int i = ind;i < v->length;i ++){
+        v->data[i] = v->data[i+1];
     }
     v->length --;
     return 1;
 }
 
-void output(Vector *v){
+void output(vector *v){
     printf("arr=[");
-    for(int i = 0;i < v->length;i++){
+    for(int i = 0;i < v->length;i ++){
         printf(" %d",v->data[i]);
     }
     printf("]\n");
-    return;
 }
 
 int main(){
     #define MAX_OP 20
     int op,ind,val;
-    Vector *v;
+    vector *v;
     v = init(MAX_OP);
     for(int i = 0;i < MAX_OP;i ++){
         op = rand() % 4;
