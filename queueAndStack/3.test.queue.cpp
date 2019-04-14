@@ -10,7 +10,8 @@
 
 typedef struct queue{
     int *data;
-    int head,tail,length;
+    int head,tail,length;// 长度
+    int count;//用来循环队列
 }queue;
 
 queue *init(int n){
@@ -18,24 +19,28 @@ queue *init(int n){
     q -> length = n;
     q -> data = (int *)malloc(sizeof(int) * n);
     q -> head = 0;
-    q -> tail = -1;
+    q -> count = 0;
+    q -> tail = -1;// 队列的最后一个元素还是最后一个没有元素的位置
     return q;
 }
 
-int push(queue *q,int value){
-    if(q -> tail + 1 == q -> length)return 0;
-    q -> tail ++;
-    q -> data[q -> tail] = value;
-    return 1;
+int empty(queue *q){
+    return q -> count == 0;
 }
 
-int empty(queue *q){
-    return q -> head > q -> tail;
+int push(queue *q,int value){
+    if(q -> count == q -> length)return 0 ;
+    q -> data[(q->tail)++ ] = value;
+    if(q -> tail >= q -> length)q -> tail -= q-> length;
+    q -> count ++;
+    return 1;
 }
 
 void pop(queue *q){
     if(empty(q))return;
     q -> head += 1;
+    if(q -> tail >= q -> length)q -> tail -= q-> length;
+    q -> count --;
     return ;
 }
 
@@ -53,9 +58,9 @@ void clear(queue *q){
 
 void output(queue *q){
     printf("queue = [");
-    for(int i = q->head;i <= q->tail;i ++){
-        printf(" %d",q -> data[i]);
-        i == q->tail || printf(",");
+    for(int i = 0;i < q->count;i ++){
+        int ind = (q ->head + i) % q->length;
+        printf(" %d",q -> data[ind]);
     }
     printf("]\n");
 }
@@ -64,21 +69,21 @@ void output(queue *q){
 int main(){
     #define MAX_OP 20
     srand(time(0));
-    queue *q = init(MAX_OP);
+    queue *q = init(20);
     for(int i = 0;i < MAX_OP;i ++){
         int op = rand()%4, value = rand()%100;
         switch(op){
             case 0:
             case 1:
             case 2:
-            push(q,value);
-            printf("push %d to queue\n",value);
-            output(q);
+                push(q,value);
+                printf("push %d to queue\n",value);
+                output(q);
             break;
             case 3:
-            printf("pop %d from queue\n",front(q));
-            pop(q);
-            output(q);
+                printf("pop %d from queue\n",front(q));
+                pop(q);
+                output(q);
             break;
         }
     }

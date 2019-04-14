@@ -4,7 +4,6 @@
 	> Mail:   hug@haizeix.com
 	> Created Time: 六  4/13 18:32:22 2019
  ************************************************************************/
-
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -21,6 +20,7 @@ using namespace std;
 struct Edge {
     int to, next;
 } g[MAX_M + 5];
+
 int head[MAX_N + 5] = {0}, cnt = 0;
 int gas[MAX_N + 5][MAX_K + 5] = {0}, deep[MAX_N + 5] = {0};
 int father[MAX_N + 5] = {0};
